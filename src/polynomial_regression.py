@@ -19,6 +19,8 @@ def read_csv(file_path: str) -> pd.DataFrame:
     data = pd.read_csv(file_path)
     if data.empty:
         raise ValueError("The CSV file is empty.")
+    if not {"Size", "Price"}.issubset(data.columns):
+        raise ValueError("The CSV file must contain 'Size' and 'Price' columns.")
     return data
 
 
@@ -34,7 +36,11 @@ def train_polynomial_regression(X: np.array, y: np.array, degree: int):
     Returns:
     tuple: Trained model and polynomial feature transformer.
     """
-
+    X = np.asarray(X).reshape(-1, 1)
+    poly = PolynomialFeatures(degree=degree)
+    X_poly = poly.fit_transform(X)
+    model = LinearRegression()
+    model.fit(X_poly, y)
     return model, poly
 
 
@@ -50,7 +56,7 @@ def predict_prices(model: LinearRegression, poly: PolynomialFeatures, X: np.arra
     Returns:
     np.array: Predicted prices.
     """
-
+    X_poly = poly.transform(np.asarray(X).reshape(-1, 1))
     return model.predict(X_poly)
 
 
@@ -65,7 +71,9 @@ def evaluate_model(y_true: np.array, y_pred: np.array):
     Returns:
     dict: Evaluation metrics.
     """
-
+    mae = mean_absolute_error(y_true, y_pred)
+    mse = mean_squared_error(y_true, y_pred)
+    rmse = np.sqrt(mse)
     return {"MAE": mae, "MSE": mse, "RMSE": rmse}
 
 

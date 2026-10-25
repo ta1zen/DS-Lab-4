@@ -21,7 +21,11 @@ def visualize_data(data: pd.DataFrame, x_column: str, y_column: str):
     """
     Visualizes the relationship between the feature and the target variable.
     """
-
+    plt.scatter(data[x_column], data[y_column], color='blue', label='Data points')
+    plt.xlabel(x_column)
+    plt.ylabel(y_column)
+    plt.title(f'{y_column} vs {x_column}')
+    plt.legend()
     plt.show()
 
 
@@ -30,19 +34,23 @@ def linear_regression_with_metrics(data: pd.DataFrame, x_column: str, y_column: 
     Performs linear regression, evaluates metrics, and visualizes the regression line.
     """
     # Prepare the data
-
+    X = data[[x_column]].values
+    y = data[y_column].values
 
     # Split the data
-
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Train the model
-
+    model = LinearRegression()
+    model.fit(X_train, y_train)
 
     # Make predictions
-
+    y_pred = model.predict(X_test)
 
     # Evaluate the model
-
+    mae = mean_absolute_error(y_test, y_pred)
+    mse = mean_squared_error(y_test, y_pred)
+    rmse = np.sqrt(mse)
 
     print(f"Model Evaluation Metrics:")
     print(f"Mean Absolute Error (MAE): {mae:.2f}")
